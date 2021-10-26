@@ -10,7 +10,7 @@ import pollers as pol
 def test_orchestration_service_with_mock_poller():
     mock_poller = pol.MockStatePoller()
     mock_state_dict = {
-        "state1": [orch.Task(print, "state1")],
+        "state1": [orch.Task(print, "state1"), orch.Task(print, "state1 second print")],
         "state2": [orch.Task(print, "state2")],
         "state3": [orch.Task(print, "state3")],
         "state4": [orch.Task(print, "state4")],

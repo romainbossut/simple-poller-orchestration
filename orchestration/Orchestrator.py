@@ -30,12 +30,12 @@ class Orchestrator:
         self.state = self.state_poller.poll_state()
 
         if self.state != self.previous_state:
-            logger.info("state changed from {} to {}".format(self.previous_state, self.state))
+            logger.info(" - state changed from {} to {}".format(self.previous_state, self.state))
         if self.state in self.state_dict:
-            logger.info("state match found for {}".format(self.state))
+            logger.info(" + state match found for {}".format(self.state))
             self.state_task = self.state_dict[self.state]
             for task in self.state_task:
-                logger.info("Running task {}".format(task.__class__.__name__))
+                logger.info("     - Running task with function {}".format(task.get_function().__name__))
                 task.run()
         else:
             logger.info("No matched task found for state {}".format(self.state))

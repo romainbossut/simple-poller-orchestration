@@ -3,9 +3,19 @@ import datetime
 
 logger = logging.getLogger(__name__)
 import threading
-import unittest
+import unittest 
 
 # rewrite Task so that if the task fails after max retry, a fail over function is called, if provided.
+# Create a TaskFailed Exception which give the name of the function that failed and the number of times it was retried
+class TaskFailed(Exception):
+    def __init__(self, function_name, retry_count):
+        self.function_name = function_name
+        self.retry_count = retry_count
+
+    def __str__(self):
+        return "Task {} failed after {} retries".format(self.function_name, self.retry_count)
+
+# use TaskFailed Exception is Task class
 class Task:
     """
     This is a class that defines a task to be run.
@@ -23,7 +33,7 @@ class Task:
         retry_count (int): The number of times the function has been retried.
         max_retry (int): The maximum number of times to retry running the function
             in case of an exception.
-        fail_over_function (function): The function to be run if the task fails after max retry
+        fail_over_function (function): The function to be run if the task fails after max retry. This is to perform cleanup and/or mitigating action
 
     """
     def __init__(self, function, *args, max_retry=0, fail_over_function=None):
@@ -45,8 +55,9 @@ class Task:
                 self.run()
             else:
                 if self.fail_over_function is not None:
+                    logger.error("Running fail over function {}".format(self.fail_over_function.__name__))
                     self.fail_over_function()
-                raise e
+                raise TaskFailed(self.function.__name__, self.retry_count)
         self.end_time = datetime.datetime.now()
 
     def get_start_time(self):
@@ -57,6 +68,9 @@ class Task:
 
     def get_duration(self):
         return self.end_time - self.start_time
+
+    def get_function(self):
+        return self.function
 
 # A test of the class Task, with max retry set to 2 where the function provided fails fail the first time it is called.
 def test_function():
@@ -78,3 +92,4 @@ class TestTask(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
+
