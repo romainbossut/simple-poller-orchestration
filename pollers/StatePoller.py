@@ -6,3 +6,4 @@ class StatePoller:
 
     def poll_state(self):
         return self.state
+
