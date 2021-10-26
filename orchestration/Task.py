@@ -5,6 +5,7 @@ logger = logging.getLogger(__name__)
 import threading
 import unittest
 
+# rewrite Task so that if the task fails after max retry, a fail over function is called, if provided.
 class Task:
     """
     This is a class that defines a task to be run.
@@ -14,6 +15,7 @@ class Task:
         *args (list): The arguments to be passed to the function.
         max_retry (int): The maximum number of times to retry running the function
             in case of an exception.
+        fail_over_function (function): The function to be run if the task fails after max retry
 
     Attributes:
         function (function): The function to be run.
@@ -21,13 +23,15 @@ class Task:
         retry_count (int): The number of times the function has been retried.
         max_retry (int): The maximum number of times to retry running the function
             in case of an exception.
+        fail_over_function (function): The function to be run if the task fails after max retry
 
     """
-    def __init__(self, function, *args, max_retry=0):
+    def __init__(self, function, *args, max_retry=0, fail_over_function=None):
         self.function = function
         self.args = args
         self.retry_count = 0
         self.max_retry = max_retry
+        self.fail_over_function = fail_over_function
 
     def run(self):
         self.start_time = datetime.datetime.now()
@@ -40,6 +44,8 @@ class Task:
                 self.retry_count += 1
                 self.run()
             else:
+                if self.fail_over_function is not None:
+                    self.fail_over_function()
                 raise e
         self.end_time = datetime.datetime.now()
 
@@ -60,10 +66,13 @@ def test_function():
     else:
         print("Success")
 
+def fail_over_function():
+    print("Fail over function called")
+
 class TestTask(unittest.TestCase):
     def test_task(self):
         test_function.fail_count = 0
-        task = Task(test_function, max_retry=2)
+        task = Task(test_function, max_retry=2, fail_over_function=fail_over_function)
         task.run()
         self.assertEqual(task.retry_count, 1)
 
