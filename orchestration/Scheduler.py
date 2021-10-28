@@ -29,3 +29,91 @@ class Scheduler():
 
     def terminate(self):
         self._running = False
+
+
+if __name__ == '__main__':
+
+#unit tests of this class
+    import unittest
+    from unittest.mock import Mock
+
+    class TestScheduler(unittest.TestCase):
+        def test_run(self):
+            orchestrator = Mock()
+            scheduler = Scheduler(orchestrator, 1)
+            scheduler.run()
+            self.assertTrue(scheduler.thread.is_alive())
+
+        def test_terminate(self):
+            orchestrator = Mock()
+            scheduler = Scheduler(orchestrator, 1)
+            scheduler.terminate()
+            self.assertFalse(scheduler.thread.is_alive())
+
+    unittest.main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -90,6 +90,13 @@ class TestTask(unittest.TestCase):
         task.run()
         self.assertEqual(task.retry_count, 1)
 
+    def test_task_fail_over(self):
+        test_function.fail_count = 0
+        task = Task(test_function, max_retry=0, fail_over_function=fail_over_function)
+        with self.assertRaises(TaskFailed):
+            task.run()
+
+
+
 if __name__ == '__main__':
     unittest.main(argv=['first-arg-is-ignored'], exit=False)
-

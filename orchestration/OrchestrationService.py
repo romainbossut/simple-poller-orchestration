@@ -24,4 +24,3 @@ class OrchestrationService:
         self.scheduler.terminate()
         print("---- Service {} scheduler stopped".format(self.name))
 
-

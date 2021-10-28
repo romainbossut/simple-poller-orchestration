@@ -1,5 +1,6 @@
 # create an AppianPoller, with in parameter appian api url and api key, with a method that does a request on the api and returns the state
 from .StatePoller import StatePoller
+import requests
 
 def parse_appian_response(response):
     import json

@@ -23,3 +23,50 @@ def test_orchestration_service_with_mock_poller():
 
 
 test_orchestration_service_with_mock_poller()
+
+
+# function that draws a chart of the state_dict
+def draw_state_dict_chart(state_dict):
+    import matplotlib.pyplot as plt
+    import networkx as nx
+
+    G = nx.DiGraph()
+
+    for state in state_dict:
+        G.add_node(state)
+        for task in state_dict[state]:
+            G.add_node(task.get_function().__name__)
+            G.add_edge(state, task.get_function().__name__)
+
+    nx.draw(G, with_labels=True)
+    plt.show()
+
+
+# function that draws a chart of the state_dict
+def draw_state_dict_chart_with_state_inputs(state_dict):
+    import matplotlib.pyplot as plt
+    import networkx as nx
+
+    G = nx.DiGraph()
+
+    for state in state_dict:
+        G.add_node(state)
+        for task in state_dict[state]:
+            G.add_node(task.get_function().__name__)
+            G.add_edge(state, task.get_function().__name__)
+
+    nx.draw(G, with_labels=True)
+    plt.show()
+
+
+# draw the following dict
+import matplotlib.pyplot as plt
+mock_state_dict = {
+        "state1": [orch.Task(print, "state1"), orch.Task(plt.show, "state1 second print")],
+        "state2": [orch.Task(print, "state2")],
+        "state3": [orch.Task(print, "state3")],
+        "state4": [orch.Task(print, "state4")],
+        "state5": [orch.Task(print, "state5")]
+    }
+draw_state_dict_chart(mock_state_dict)
+
